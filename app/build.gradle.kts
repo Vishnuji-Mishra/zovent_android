@@ -40,6 +40,7 @@ android {
     }
     buildFeatures{
         dataBinding = true
+        viewBinding = true
     }
 }
 
@@ -51,6 +52,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.messaging.ktx)
+    implementation(libs.androidx.navigation.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,5 +62,21 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.3")
+
+    //glide
+    implementation(libs.glide)
+
+    implementation("androidx.media3:media3-exoplayer:1.7.1")
+    implementation ("androidx.media3:media3-ui:1.7.1")
+
+    implementation("com.github.mukeshsolanki:android-otpview-pinview:2.1.2")
+
+    implementation("com.github.KevinSchildhorn:OTPView:0.2.5")
+
+
+
+
 
 }

@@ -1,4 +1,43 @@
 package com.app.zovent.utils
+
+import android.text.method.PasswordTransformationMethod
+import android.view.View
+
+
+object CommonUtils {
+    object DotPasswordTransformationMethod : PasswordTransformationMethod() {
+        override fun getTransformation(source: CharSequence, view: View): CharSequence {
+            return PasswordCharSequence(super.getTransformation(source, view))
+        }
+
+        private class PasswordCharSequence(
+            val transformation: CharSequence
+        ) : CharSequence by transformation {
+            override fun get(index: Int): Char = if (transformation[index] == DOT) {
+                STAR
+            } else {
+                transformation[index]
+            }
+        }
+
+        private const val DOT = '\u2022'
+        private const val STAR = '*'
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 //
 //import android.app.Activity
 //import android.app.AlertDialog

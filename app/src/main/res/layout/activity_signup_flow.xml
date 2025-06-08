@@ -11,14 +11,14 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.main.activity.SplashActivity">
-
-        <androidx.media3.ui.PlayerView
-            android:id="@+id/playerView"
+        tools:context=".ui.main.activity.SignupFlowActivity">
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/signup_nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:use_controller="false"
-            android:layout_gravity="center"
-            android:background="#000000" />
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/signup_navigation" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
