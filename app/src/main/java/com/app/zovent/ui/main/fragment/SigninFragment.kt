@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
 import com.app.zovent.databinding.FragmentSigninBinding
@@ -93,7 +94,7 @@ class SigninFragment : BaseFragment<FragmentSigninBinding, SigninViewModel>(R.la
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 // Handle click here
-                Toast.makeText(widget.context, "Register clicked!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_signinFragment_to_signupFragment)
             }
 
             override fun updateDrawState(ds: TextPaint) {

@@ -12,4 +12,11 @@
     <string name="didn_t_receive_code_resend_again">Didn’t receive code? Resend again</string>
     <string name="didn_t_receive_code">Didn’t receive code?</string>
     <string name="resend_again">" Resend again"</string>
+    <string name="email_">Email<font color="#FD4141">*</font></string>
+    <string name="mobile_number_">Mobile number<font color="#FD4141">*</font></string>
+    <string name="business_name_">Business name<font color="#FD4141">*</font></string>
+    <string name="business_type_">Business type<font color="#FD4141">*</font></string>
+    <string name="gst_registration_">GST Registration<font color="#FD4141">*</font></string>
+    <string name="area_pincode_">Area pincode<font color="#FD4141">*</font></string>
+    <string name="district_name_">District name<font color="#FD4141">*</font></string>
 </resources>
