@@ -9,20 +9,24 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.app.zovent.R
+import com.app.zovent.databinding.ActivitySignupFlowBinding
+import com.app.zovent.ui.base.BaseActivity
 
-class SignupFlowActivity : AppCompatActivity() {
+class SignupFlowActivity : BaseActivity<ActivitySignupFlowBinding>() {
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_signup_flow)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.signup_nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         handleActivityBackButton()
 
+    }
+    override fun getLayoutId(): Int {
+        return R.layout.activity_signup_flow // Ensure this points to the correct layout resource
     }
     private fun handleActivityBackButton() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

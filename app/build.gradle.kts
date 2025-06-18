@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("androidx.navigation.safeargs.kotlin")
+
 }
 
 android {
@@ -75,8 +77,11 @@ dependencies {
 
     implementation("com.github.KevinSchildhorn:OTPView:0.2.5")
 
+//    implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
 
+//    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
 }

@@ -45,6 +45,9 @@ class SigninFragment : BaseFragment<FragmentSigninBinding, SigninViewModel>(R.la
         mViewModel.validationMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
+        mViewModel.closeActivityEvent.observe(viewLifecycleOwner) {
+            requireActivity().finish()
+        }
     }
 
     fun setWelcomeText(textView: TextView) {

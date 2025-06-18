@@ -73,6 +73,7 @@
                 android:weightSum="4">
 
                 <EditText
+                    android:text="@={viewModel.otp1}"
                     android:id="@+id/etOtp1"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -90,6 +91,7 @@
                     android:textColor="@color/black"/>
 
                 <EditText
+                    android:text="@={viewModel.otp2}"
                     android:id="@+id/etOtp2"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -107,6 +109,7 @@
                     android:textColor="@color/black"/>
 
                 <EditText
+                    android:text="@={viewModel.otp3}"
                     android:id="@+id/etOtp3"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -124,6 +127,7 @@
                     android:textColor="@color/black"/>
 
                 <EditText
+                    android:text="@={viewModel.otp4}"
                     android:id="@+id/etOtp4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -154,7 +158,8 @@
                 android:fontFamily="@font/poppins_regular"/>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/loginButton"
+                android:onClick="@{viewModel::onClick}"
+                android:id="@+id/verifyButton"
                 style="@style/AppButtonStyle"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="32dp"

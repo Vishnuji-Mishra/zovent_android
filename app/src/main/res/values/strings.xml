@@ -19,4 +19,11 @@
     <string name="gst_registration_">GST Registration<font color="#FD4141">*</font></string>
     <string name="area_pincode_">Area pincode<font color="#FD4141">*</font></string>
     <string name="district_name_">District name<font color="#FD4141">*</font></string>
+    <string name="gst_registration">GST Registration</string>
+    <string name="optional">(optional)</string>
+    <string name="food_licence">Food Licence</string>
+    <string name="food_licence_">Food Licence<font color="#FD4141">*</font></string>
+    <string name="drug_licence">Drug Licence</string>
+    <string name="drug_licence_">Drug Licence<font color="#FD4141">*</font></string>
+    <string name="choose_file">Choose File</string>
 </resources>

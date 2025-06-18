@@ -8,12 +8,14 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
 import com.app.zovent.databinding.FragmentOTPBinding
@@ -27,10 +29,13 @@ import com.app.zovent.ui.main.view_model.SigninViewModel
 class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.fragment_o_t_p) {
     override val binding: FragmentOTPBinding by viewBinding(FragmentOTPBinding::bind)
     override val mViewModel: OTPViewModel by viewModels()
+    private val args: OTPFragmentArgs by navArgs()
 
     override fun isNetworkAvailable(boolean: Boolean) {}
 
-    override fun setupViewModel() {}
+    override fun setupViewModel() {
+
+    }
 
     override fun setupViews() {
         binding.apply {
@@ -39,9 +44,15 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
         }
         resendNowText()
         customOtp()
+        Log.i("TAG", "setupViews: "+args.from)
+        mViewModel.from = args.from
     }
 
-    override fun setupObservers() {}
+    override fun setupObservers() {
+        mViewModel.validationMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+    }
     private fun customOtp() {
         val etOtp1 = binding.etOtp1
         val etOtp2 = binding.etOtp2

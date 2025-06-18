@@ -9,18 +9,60 @@
         android:name="com.app.zovent.ui.main.fragment.SigninFragment"
         android:label="SigninFragment" >
         <action
-            android:id="@+id/action_signinFragment_to_OTPFragment"
-            app:destination="@id/OTPFragment" />
-        <action
             android:id="@+id/action_signinFragment_to_signupFragment"
             app:destination="@id/signupFragment" />
+        <action
+            android:id="@+id/action_signinFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
+        <action
+            android:id="@+id/action_signinFragment_to_dashboardActivity"
+            app:destination="@id/dashboardActivity" />
     </fragment>
     <fragment
         android:id="@+id/OTPFragment"
         android:name="com.app.zovent.ui.main.fragment.OTPFragment"
-        android:label="OTPFragment" />
+        android:label="OTPFragment" >
+        <action
+            android:id="@+id/action_OTPFragment_to_dashboardActivity"
+            app:destination="@id/dashboardActivity" />
+        <argument android:name="from" app:argType="string" app:nullable="false"/>
+        <action
+            android:id="@+id/action_OTPFragment_to_newPasswordFragment"
+            app:destination="@id/newPasswordFragment" />
+    </fragment>
     <fragment
         android:id="@+id/signupFragment"
         android:name="com.app.zovent.ui.main.fragment.SignupFragment"
-        android:label="SignupFragment" />
+        android:label="SignupFragment" >
+        <action
+            android:id="@+id/action_signupFragment_to_signinFragment"
+            app:destination="@id/signinFragment"
+            app:popUpTo="@id/signup_navigation"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_signupFragment_to_OTPFragment"
+            app:destination="@id/OTPFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.app.zovent.ui.main.fragment.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment" >
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_OTPFragment2"
+            app:destination="@id/OTPFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/dashboardActivity"
+        android:name="com.app.zovent.ui.main.activity.DashboardActivity"
+        android:label="DashboardActivity" />
+    <fragment
+        android:id="@+id/newPasswordFragment"
+        android:name="com.app.zovent.ui.main.fragment.NewPasswordFragment"
+        android:label="NewPasswordFragment" >
+        <action
+            android:id="@+id/action_newPasswordFragment_to_signinFragment"
+            app:destination="@id/signinFragment"
+            app:popUpTo="@id/signup_navigation"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="horizontal_view">#B8B8B8</color>
     <color name="black_60">#99000000</color>
     <color name="black_2A2A2A">#2A2A2A</color>
     <color name="black_414141">#414141</color>
@@ -11,4 +12,13 @@
     <color name="gray_B8B8B8">#B8B8B8</color>
     <color name="gray_F5F5F5">#F5F5F5</color>
     <color name="gray_5A5A5A">#5A5A5A</color>
+    <color name="theme">#0775EB</color>
+    <color name="blue_E0F7FA">#E0F7FA</color>
+    <color name="green_E8F5E9">#E8F5E9</color>
+    <color name="orange_FFF3E0">#FFF3E0</color>
+    <color name="red_FFEBEE">#FFEBEE</color>
+    <color name="blue_E3F2FD">#E3F2FD</color>
+    <color name="blue_04BFDA">#04BFDA</color>
+    <color name="blue_1E3A8A">#1E3A8A</color>
+
 </resources>

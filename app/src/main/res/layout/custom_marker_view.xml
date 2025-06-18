@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/bgImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/graph_marker"
+        app:tint="@color/blue_E0F7FA"
+        android:adjustViewBounds="true" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:id="@+id/tvPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="₹510"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#001B44"
+        android:layout_gravity="center_horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="4dp" />
+</FrameLayout>

@@ -25,11 +25,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
         enableEdgeToEdge()
-
-        /*CoroutineScope(Dispatchers.Main).launch {
-            delay(800)
-            startActivity(Intent(this@SplashActivity, SignupFlowActivity::class.java))
-        }*/
         player = ExoPlayer.Builder(this).build()
         binding.playerView.player = player
 

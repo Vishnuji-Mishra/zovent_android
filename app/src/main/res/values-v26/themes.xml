@@ -18,6 +18,7 @@
                 <item name="android:paddingVertical">15dp</item>
                 <item name="android:paddingHorizontal">15dp</item>
                 <item name="android:textSize">12sp</item>
+                <item name="android:maxLength">30</item>
                 <item name="android:maxLines">1</item>
                 <item name="android:textColor">@color/gray_5A5A5A</item>
                 <item name="android:fontFamily">@font/poppins_regular</item>
