@@ -12,6 +12,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -19,7 +20,10 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
@@ -27,6 +31,10 @@ import com.app.zovent.databinding.FragmentSignupBinding
 import com.app.zovent.ui.base.BaseFragment
 import com.app.zovent.ui.main.view_model.SignupViewModel
 import com.app.zovent.utils.CommonUtils
+import com.app.zovent.utils.ProcessDialog
+import com.app.zovent.utils.Status
+import com.app.zovent.utils.StatusCode
+import com.google.gson.Gson
 import kotlin.getValue
 
 class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.layout.fragment_signup) {
@@ -36,7 +44,64 @@ class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.la
 
     override fun isNetworkAvailable(boolean: Boolean) {}
 
-    override fun setupViewModel() {}
+    override fun setupViewModel() {
+        mViewModel.getDistrictNameResponse.observe(viewLifecycleOwner){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProcessDialog.dismissDialog()
+                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+//                    if (it.data?.status == StatusCode.STATUS_CODE_SUCCESS) {
+                        binding.districtNameInput.setText(it.data?.district)
+//                    }
+//                    else if (it.data?.status == StatusCode.STATUS_CODE_USER_BLOCKED) {
+//                        Toast.makeText(requireContext(), it.data.message, Toast.LENGTH_SHORT).show()
+//                    }
+
+                }
+                Status.LOADING -> {
+
+                    ProcessDialog.startDialog(requireContext())
+
+
+                }
+                Status.ERROR -> {
+                    ProcessDialog.dismissDialog()
+
+                    it.message?.let {
+//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
+        mViewModel.getSignupResponse.observe(viewLifecycleOwner){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProcessDialog.dismissDialog()
+                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+                    findNavController().navigate(SignupFragmentDirections.actionSignupFragmentToOTPFragment(from = "signup", email = it.data?.email ?: ""))
+
+                }
+                Status.LOADING -> {
+
+                    ProcessDialog.startDialog(requireContext())
+
+
+                }
+                Status.ERROR -> {
+                    ProcessDialog.dismissDialog()
+
+                    it.message?.let {
+//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
+
+    }
 
     override fun setupViews() {
         binding.apply {
@@ -47,7 +112,19 @@ class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.la
         setWelcomeText(binding.welcomeText)
         setPasswordToggle()
         alreadyHaveAccountText()
+        setPincodeTextwatcher()
     }
+
+    private fun setPincodeTextwatcher() {
+        binding.apply {
+            areaPincodeInput.doAfterTextChanged {
+                if (areaPincodeInput.text.trim().length==6){
+                    mViewModel.hitGetDistrictNameApi(areaPincodeInput.text.trim().toString())
+                }
+            }
+        }
+    }
+
     private fun setPasswordToggle() {
         binding.password.transformationMethod = CommonUtils.DotPasswordTransformationMethod
         binding.passwordToggle.setOnClickListener {

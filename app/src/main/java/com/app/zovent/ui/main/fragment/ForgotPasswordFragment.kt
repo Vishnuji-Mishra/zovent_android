@@ -1,12 +1,20 @@
 package com.app.zovent.ui.main.fragment
 
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
 import com.app.zovent.databinding.FragmentForgotPasswordBinding
 import com.app.zovent.ui.base.BaseFragment
+import com.app.zovent.ui.main.activity.DashboardActivity
 import com.app.zovent.ui.main.view_model.ForgotPasswordViewModel
+import com.app.zovent.utils.ProcessDialog
+import com.app.zovent.utils.Status
+import com.app.zovent.utils.StatusCode
+import com.google.gson.Gson
 import kotlin.getValue
 
 class ForgotPasswordFragment : BaseFragment<FragmentForgotPasswordBinding, ForgotPasswordViewModel>(R.layout.fragment_forgot_password) {
@@ -28,6 +36,36 @@ class ForgotPasswordFragment : BaseFragment<FragmentForgotPasswordBinding, Forgo
         mViewModel.validationMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
+        mViewModel.forgotPasswordResponse.observe(viewLifecycleOwner){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProcessDialog.dismissDialog()
+                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+//                    if (it.data?.status == StatusCode.STATUS_CODE_SUCCESS) {
+                        findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToOTPFragment2(from = "forgot", email = mViewModel.email.get()?.trim() ?: ""))
+//                    }
+//                    else if (it.data?.status == StatusCode.STATUS_CODE_USER_BLOCKED) {
+//                        Toast.makeText(requireContext(), it.data.message, Toast.LENGTH_SHORT).show()
+//                    }
+
+                }
+                Status.LOADING -> {
+
+                    ProcessDialog.startDialog(requireContext())
+
+
+                }
+                Status.ERROR -> {
+                    ProcessDialog.dismissDialog()
+
+                    it.message?.let {
+//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
     }
 
 

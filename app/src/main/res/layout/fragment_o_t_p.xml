@@ -70,79 +70,37 @@
                 android:layout_marginTop="32dp"
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:weightSum="4">
+                android:weightSum="6">
 
                 <EditText
-                    android:text="@={viewModel.otp1}"
+                    style="@style/OtpEditTextStyle"
                     android:id="@+id/etOtp1"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:inputType="number"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:maxLength="1"
-                    android:hint=""
-                    android:textColorHint="@color/white"
-                    android:singleLine="true"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/background_otp"
-                    android:textSize="16dp"
-                    android:layout_weight="1"
-                    android:textColor="@color/black"/>
+                    android:text="@={viewModel.otp1}" />
 
                 <EditText
-                    android:text="@={viewModel.otp2}"
+                    style="@style/OtpEditTextStyle"
                     android:id="@+id/etOtp2"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:inputType="number"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:maxLength="1"
-                    android:hint=""
-                    android:textColorHint="@color/white"
-                    android:singleLine="true"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/background_otp"
-                    android:textSize="16dp"
-                    android:layout_weight="1"
-                    android:textColor="@color/black"/>
+                    android:text="@={viewModel.otp2}" />
 
                 <EditText
-                    android:text="@={viewModel.otp3}"
+                    style="@style/OtpEditTextStyle"
                     android:id="@+id/etOtp3"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:inputType="number"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:maxLength="1"
-                    android:hint=""
-                    android:textColorHint="@color/white"
-                    android:singleLine="true"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/background_otp"
-                    android:textSize="16dp"
-                    android:layout_weight="1"
-                    android:textColor="@color/black"/>
+                    android:text="@={viewModel.otp3}" />
 
                 <EditText
-                    android:text="@={viewModel.otp4}"
+                    style="@style/OtpEditTextStyle"
                     android:id="@+id/etOtp4"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:inputType="number"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:hint=""
-                    android:textColorHint="@color/white"
-                    android:maxLength="1"
-                    android:singleLine="true"
-                    android:background="@drawable/background_otp"
-                    android:textSize="16dp"
-                    android:layout_weight="1"
-                    android:textColor="@color/black"/>
+                    android:text="@={viewModel.otp4}" />
 
+                <EditText
+                    style="@style/OtpEditTextStyle"
+                    android:id="@+id/etOtp5"
+                    android:text="@={viewModel.otp5}" />
+
+                <EditText
+                    style="@style/OtpEditTextStyle"
+                    android:id="@+id/etOtp6"
+                    android:text="@={viewModel.otp6}" />
             </LinearLayout>
 
             <TextView

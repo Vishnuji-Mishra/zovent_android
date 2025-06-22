@@ -1,10 +1,27 @@
 package com.app.zovent.utils
 
+import android.app.Activity
+import android.content.Context
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 
 
 object CommonUtils {
+    fun hideKeyboard(activity: Activity) {
+        Log.i("TAG", "hideKeyboard: ")
+        try {
+            val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            if (inputMethodManager.isActive) {
+                inputMethodManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
+            } else
+                return
+        } catch (e: Exception) {
+
+        }
+
+    }
     object DotPasswordTransformationMethod : PasswordTransformationMethod() {
         override fun getTransformation(source: CharSequence, view: View): CharSequence {
             return PasswordCharSequence(super.getTransformation(source, view))

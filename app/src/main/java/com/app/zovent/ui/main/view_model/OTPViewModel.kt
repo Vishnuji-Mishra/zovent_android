@@ -6,10 +6,21 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.app.zovent.R
+import com.app.zovent.data.api.RetrofitBuilder
+import com.app.zovent.data.model.signup.request.SignupRequest
+import com.app.zovent.data.model.signup.response.SignupResponse
+import com.app.zovent.data.model.verify_signup_otp.request.VerifySignupOtpRequest
+import com.app.zovent.data.model.verify_signup_otp.response.VerifySignupOtpResponse
+import com.app.zovent.data.repository.MainRepository
 import com.app.zovent.ui.base.BaseViewModel
 import com.app.zovent.ui.main.activity.DashboardActivity
+import com.app.zovent.utils.Resource
+import com.app.zovent.utils.StatusCode
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 class OTPViewModel : BaseViewModel() {
 
@@ -17,11 +28,18 @@ class OTPViewModel : BaseViewModel() {
     val otp2 = ObservableField<String>()
     val otp3 = ObservableField<String>()
     val otp4 = ObservableField<String>()
+    val otp5 = ObservableField<String>()
+    val otp6 = ObservableField<String>()
 
     var from = ""
+    var email = ""
 
     private val _validationMessage = MutableLiveData<String>()
     val validationMessage: LiveData<String> get() = _validationMessage
+
+    var getVerifySignupOtpResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
+    var getVerifyForgotPasswordOtpResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
+
 
     fun onClick(view: View) {
         when (view.id) {
@@ -31,38 +49,98 @@ class OTPViewModel : BaseViewModel() {
             R.id.verifyButton -> {
                 if (!validateOtp()) return
 
+                val enteredOtp = getEnteredOtp()
+
                 when (from) {
                     "signup" -> {
-                        val context = view.context
-                        val intent = Intent(context, DashboardActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        }
-                        context.startActivity(intent)
+                        hitVerifySignupOtpApi(VerifySignupOtpRequest(email = email.trim() , otp = enteredOtp))
                     }
                     "forgot" -> {
-                        view.findNavController().navigate(R.id.action_OTPFragment_to_newPasswordFragment)
+                        hitVerifyForgotPasswordOtpApi(VerifySignupOtpRequest(email = email.trim() , otp = enteredOtp))
                     }
                 }
             }
         }
     }
 
-    private fun validateOtp(): Boolean {
-        val o1 = otp1.get()?.trim()
-        val o2 = otp2.get()?.trim()
-        val o3 = otp3.get()?.trim()
-        val o4 = otp4.get()?.trim()
+    fun getEnteredOtp(): String{
+        return listOf(otp1, otp2, otp3, otp4, otp5, otp6).joinToString("") { it.get().orEmpty() }
+    }
 
-        if (o1.isNullOrEmpty() || o2.isNullOrEmpty() || o3.isNullOrEmpty() || o4.isNullOrEmpty()) {
-            _validationMessage.value = "Please enter all 4 digits of the OTP"
-            return false
+    fun hitVerifySignupOtpApi(request: VerifySignupOtpRequest) {
+        val mainRepository = MainRepository(RetrofitBuilder.apiService)
+        viewModelScope.launch {
+            getVerifySignupOtpResponse.postValue(Resource.loading(null))
+            try {
+
+                getVerifySignupOtpResponse.postValue(
+                    Resource.success(
+                        mainRepository.verifySignupOtpApi(request)
+
+                    )
+                )
+            } catch (ex: IOException) {
+                getVerifySignupOtpResponse.postValue(
+                    Resource.error(
+                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
+                        null
+                    )
+                )
+            } catch (exception: Exception) {
+                getVerifySignupOtpResponse.postValue(
+                    Resource.error(
+                        StatusCode.SERVER_ERROR_MESSAGE,
+                        null
+                    )
+                )
+            }
+
+
         }
 
-        // You can also concatenate and validate the full OTP if needed
-        val enteredOtp = o1 + o2 + o3 + o4
+    }
 
-        // If you want to compare against a correct OTP, do it here
-        // Example: if (enteredOtp != expectedOtp) { _validationMessage.value = "Incorrect OTP"; return false }
+    fun hitVerifyForgotPasswordOtpApi(request: VerifySignupOtpRequest) {
+        val mainRepository = MainRepository(RetrofitBuilder.apiService)
+        viewModelScope.launch {
+            getVerifyForgotPasswordOtpResponse.postValue(Resource.loading(null))
+            try {
+
+                getVerifyForgotPasswordOtpResponse.postValue(
+                    Resource.success(
+                        mainRepository.verifyForgotPasswordOtpApi(request)
+
+                    )
+                )
+            } catch (ex: IOException) {
+                getVerifyForgotPasswordOtpResponse.postValue(
+                    Resource.error(
+                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
+                        null
+                    )
+                )
+            } catch (exception: Exception) {
+                getVerifyForgotPasswordOtpResponse.postValue(
+                    Resource.error(
+                        StatusCode.SERVER_ERROR_MESSAGE,
+                        null
+                    )
+                )
+            }
+
+
+        }
+
+    }
+
+
+    private fun validateOtp(): Boolean {
+        val fields = listOf(otp1, otp2, otp3, otp4, otp5, otp6)
+
+        if (fields.any { it.get().isNullOrEmpty() }) {
+            _validationMessage.value = "Please enter all 6 digits of the OTP"
+            return false
+        }
 
         return true
     }

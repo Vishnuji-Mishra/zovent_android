@@ -1,5 +1,6 @@
 package com.app.zovent.ui.main.fragment
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableString
@@ -15,16 +16,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
 import com.app.zovent.databinding.FragmentOTPBinding
 import com.app.zovent.databinding.FragmentSigninBinding
 import com.app.zovent.ui.base.BaseFragment
+import com.app.zovent.ui.main.activity.DashboardActivity
 import com.app.zovent.ui.main.custom.GenericKeyEvent
 import com.app.zovent.ui.main.custom.GenericTextWatcher
 import com.app.zovent.ui.main.view_model.OTPViewModel
 import com.app.zovent.ui.main.view_model.SigninViewModel
+import com.app.zovent.utils.CommonUtils
+import com.app.zovent.utils.PreferenceEntity.IS_LOGIN
+import com.app.zovent.utils.PreferenceEntity.TOKEN
+import com.app.zovent.utils.Preferences
+import com.app.zovent.utils.ProcessDialog
+import com.app.zovent.utils.Status
+import com.google.gson.Gson
 
 class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.fragment_o_t_p) {
     override val binding: FragmentOTPBinding by viewBinding(FragmentOTPBinding::bind)
@@ -46,27 +57,91 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
         customOtp()
         Log.i("TAG", "setupViews: "+args.from)
         mViewModel.from = args.from
+        mViewModel.email = args.email
     }
 
     override fun setupObservers() {
         mViewModel.validationMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
+        mViewModel.getVerifySignupOtpResponse.observe(viewLifecycleOwner){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProcessDialog.dismissDialog()
+                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+                    Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
+                    Preferences.setStringPreference(requireContext(), TOKEN, it.data?.token ?: "")
+                    CommonUtils.hideKeyboard(requireActivity())
+                    val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    requireContext().startActivity(intent)
+                }
+                Status.LOADING -> {
+
+                    ProcessDialog.startDialog(requireContext())
+
+
+                }
+                Status.ERROR -> {
+                    ProcessDialog.dismissDialog()
+
+                    it.message?.let {
+//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
+        mViewModel.getVerifyForgotPasswordOtpResponse.observe(viewLifecycleOwner){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProcessDialog.dismissDialog()
+                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+                    findNavController().navigate(OTPFragmentDirections.actionOTPFragmentToNewPasswordFragment(from = mViewModel.from, email = mViewModel.email, otp = mViewModel.getEnteredOtp()))
+
+                }
+                Status.LOADING -> {
+
+                    ProcessDialog.startDialog(requireContext())
+
+
+                }
+                Status.ERROR -> {
+                    ProcessDialog.dismissDialog()
+
+                    it.message?.let {
+//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
+
     }
     private fun customOtp() {
         val etOtp1 = binding.etOtp1
         val etOtp2 = binding.etOtp2
         val etOtp3 = binding.etOtp3
         val etOtp4 = binding.etOtp4
-        etOtp1.addTextChangedListener(GenericTextWatcher(etOtp1,etOtp2))
-        etOtp2.addTextChangedListener(GenericTextWatcher(etOtp2,etOtp3))
-        etOtp3.addTextChangedListener(GenericTextWatcher(etOtp3,etOtp4))
-        etOtp4.addTextChangedListener(GenericTextWatcher(etOtp4,null))
+        val etOtp5 = binding.etOtp5
+        val etOtp6 = binding.etOtp6
 
-        etOtp1.setOnKeyListener(GenericKeyEvent(etOtp1,null))
-        etOtp2.setOnKeyListener(GenericKeyEvent(etOtp2,etOtp1))
-        etOtp3.setOnKeyListener(GenericKeyEvent(etOtp3,etOtp2))
-        etOtp4.setOnKeyListener(GenericKeyEvent(etOtp4,etOtp3))
+        etOtp1.addTextChangedListener(GenericTextWatcher(etOtp1, etOtp2))
+        etOtp2.addTextChangedListener(GenericTextWatcher(etOtp2, etOtp3))
+        etOtp3.addTextChangedListener(GenericTextWatcher(etOtp3, etOtp4))
+        etOtp4.addTextChangedListener(GenericTextWatcher(etOtp4, etOtp5))
+        etOtp5.addTextChangedListener(GenericTextWatcher(etOtp5, etOtp6))
+        etOtp6.addTextChangedListener(GenericTextWatcher(etOtp6, null))
+
+        etOtp1.setOnKeyListener(GenericKeyEvent(etOtp1, null))
+        etOtp2.setOnKeyListener(GenericKeyEvent(etOtp2, etOtp1))
+        etOtp3.setOnKeyListener(GenericKeyEvent(etOtp3, etOtp2))
+        etOtp4.setOnKeyListener(GenericKeyEvent(etOtp4, etOtp3))
+        etOtp5.setOnKeyListener(GenericKeyEvent(etOtp5, etOtp4))
+        etOtp6.setOnKeyListener(GenericKeyEvent(etOtp6, etOtp5))
     }
     fun resendNowText(){
 

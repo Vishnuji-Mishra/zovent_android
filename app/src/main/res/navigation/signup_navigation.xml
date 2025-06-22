@@ -26,6 +26,7 @@
             android:id="@+id/action_OTPFragment_to_dashboardActivity"
             app:destination="@id/dashboardActivity" />
         <argument android:name="from" app:argType="string" app:nullable="false"/>
+        <argument android:name="email" app:argType="string" app:nullable="false"/>
         <action
             android:id="@+id/action_OTPFragment_to_newPasswordFragment"
             app:destination="@id/newPasswordFragment" />
@@ -64,5 +65,8 @@
             app:destination="@id/signinFragment"
             app:popUpTo="@id/signup_navigation"
             app:popUpToInclusive="true" />
+        <argument android:name="from" app:argType="string" app:nullable="false"/>
+        <argument android:name="email" app:argType="string" app:nullable="false"/>
+        <argument android:name="otp" app:argType="string" app:nullable="false"/>
     </fragment>
 </navigation>

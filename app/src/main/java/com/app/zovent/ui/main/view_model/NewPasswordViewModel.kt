@@ -4,9 +4,19 @@ import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.app.zovent.R
+import com.app.zovent.data.api.RetrofitBuilder
+import com.app.zovent.data.model.new_password.request.NewPasswordRequest
+import com.app.zovent.data.model.verify_signup_otp.request.VerifySignupOtpRequest
+import com.app.zovent.data.model.verify_signup_otp.response.VerifySignupOtpResponse
+import com.app.zovent.data.repository.MainRepository
 import com.app.zovent.ui.base.BaseViewModel
+import com.app.zovent.utils.Resource
+import com.app.zovent.utils.StatusCode
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 class NewPasswordViewModel : BaseViewModel() {
     val newPassword = ObservableField<String>()
@@ -14,6 +24,12 @@ class NewPasswordViewModel : BaseViewModel() {
 
     private val _validationMessage = MutableLiveData<String>()
     val validationMessage: LiveData<String> = _validationMessage
+
+    var from = ""
+    var email = ""
+    var otp = ""
+
+    var getNewPasswordResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
 
     fun onClick(view: View) {
         when (view.id) {
@@ -48,7 +64,40 @@ class NewPasswordViewModel : BaseViewModel() {
         }
 
         // Navigate if validation is successful
-        view.findNavController().navigate(R.id.action_newPasswordFragment_to_signinFragment)
+        hitCreateNewPasswordApi(NewPasswordRequest(otp = otp, email = email, new_password = newPasswordInput))
         // _validationMessage.value = "Password successfully updated!"
     }
+    fun hitCreateNewPasswordApi(request: NewPasswordRequest) {
+        val mainRepository = MainRepository(RetrofitBuilder.apiService)
+        viewModelScope.launch {
+            getNewPasswordResponse.postValue(Resource.loading(null))
+            try {
+
+                getNewPasswordResponse.postValue(
+                    Resource.success(
+                        mainRepository.newPasswordApi(request)
+
+                    )
+                )
+            } catch (ex: IOException) {
+                getNewPasswordResponse.postValue(
+                    Resource.error(
+                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
+                        null
+                    )
+                )
+            } catch (exception: Exception) {
+                getNewPasswordResponse.postValue(
+                    Resource.error(
+                        StatusCode.SERVER_ERROR_MESSAGE,
+                        null
+                    )
+                )
+            }
+
+
+        }
+
+    }
+
 }

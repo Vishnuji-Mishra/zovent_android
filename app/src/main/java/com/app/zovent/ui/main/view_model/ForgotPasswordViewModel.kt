@@ -5,16 +5,30 @@ import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.app.zovent.R
+import com.app.zovent.data.api.RetrofitBuilder
+import com.app.zovent.data.model.forgot_password.request.ForgotPasswordRequest
+import com.app.zovent.data.model.forgot_password.response.ForgotPasswordResponse
+import com.app.zovent.data.model.signin.request.LoginRequest
+import com.app.zovent.data.model.signin.response.LoginResponse
+import com.app.zovent.data.repository.MainRepository
 import com.app.zovent.ui.base.BaseViewModel
 import com.app.zovent.ui.main.fragment.ForgotPasswordFragmentDirections
+import com.app.zovent.utils.Resource
+import com.app.zovent.utils.StatusCode
+import kotlinx.coroutines.launch
+import java.io.IOException
 import kotlin.text.trim
 
 class ForgotPasswordViewModel: BaseViewModel() {
     val email = ObservableField<String>()
     private val _validationMessage = MutableLiveData<String>()
     val validationMessage: LiveData<String> = _validationMessage
+
+    var forgotPasswordResponse = MutableLiveData<Resource<ForgotPasswordResponse>>()
+
 
     fun onClick(view: View) {
         when(view.id) {
@@ -37,7 +51,41 @@ class ForgotPasswordViewModel: BaseViewModel() {
         }
 
         // Success: hit API or navigate
-         _validationMessage.value = "Successful!"
-        view.findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToOTPFragment2(from = "forgot"))
+//         _validationMessage.value = "Successful!"
+        hitApi(ForgotPasswordRequest(email = emailInput))
     }
+
+    fun hitApi(request: ForgotPasswordRequest) {
+        val mainRepository = MainRepository(RetrofitBuilder.apiService)
+        viewModelScope.launch {
+            forgotPasswordResponse.postValue(Resource.loading(null))
+            try {
+
+                forgotPasswordResponse.postValue(
+                    Resource.success(
+                        mainRepository.forgotPasswordApi(request)
+
+                    )
+                )
+            } catch (ex: IOException) {
+                forgotPasswordResponse.postValue(
+                    Resource.error(
+                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
+                        null
+                    )
+                )
+            } catch (exception: Exception) {
+                forgotPasswordResponse.postValue(
+                    Resource.error(
+                        StatusCode.SERVER_ERROR_MESSAGE,
+                        null
+                    )
+                )
+            }
+
+
+        }
+
+    }
+
 }

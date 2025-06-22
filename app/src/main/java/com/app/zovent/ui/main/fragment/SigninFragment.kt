@@ -1,6 +1,8 @@
 package com.app.zovent.ui.main.fragment
 
+import android.content.Intent
 import android.graphics.Color
+import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
@@ -8,6 +10,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -17,8 +20,16 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
 import com.app.zovent.databinding.FragmentSigninBinding
 import com.app.zovent.ui.base.BaseFragment
+import com.app.zovent.ui.main.activity.DashboardActivity
 import com.app.zovent.ui.main.view_model.SigninViewModel
 import com.app.zovent.utils.CommonUtils
+import com.app.zovent.utils.PreferenceEntity.IS_LOGIN
+import com.app.zovent.utils.PreferenceEntity.TOKEN
+import com.app.zovent.utils.Preferences
+import com.app.zovent.utils.ProcessDialog
+import com.app.zovent.utils.Status
+import com.app.zovent.utils.StatusCode
+import com.google.gson.Gson
 import kotlin.toString
 
 class SigninFragment : BaseFragment<FragmentSigninBinding, SigninViewModel>(R.layout.fragment_signin) {
@@ -47,6 +58,44 @@ class SigninFragment : BaseFragment<FragmentSigninBinding, SigninViewModel>(R.la
         }
         mViewModel.closeActivityEvent.observe(viewLifecycleOwner) {
             requireActivity().finish()
+        }
+        mViewModel.loginResponse.observe(viewLifecycleOwner){
+            when (it.status) {
+                Status.SUCCESS -> {
+                        ProcessDialog.dismissDialog()
+                        Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+//                    if (it.data?.status == StatusCode.STATUS_CODE_SUCCESS) {
+                        Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
+                        Preferences.setStringPreference(requireContext(), TOKEN, it.data?.token ?: "")
+                        CommonUtils.hideKeyboard(requireActivity())
+                        val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        requireContext().startActivity(intent)
+
+//                    }
+//                    else if (it.data?.status == StatusCode.STATUS_CODE_USER_BLOCKED) {
+
+//                        CommonUtils.logoutAlert(requireActivity(),requireContext(),getString(R.string.logout_alert),it.data.message)
+//                    }
+
+                }
+                Status.LOADING -> {
+
+                    ProcessDialog.startDialog(requireContext())
+
+
+                }
+                Status.ERROR -> {
+                    ProcessDialog.dismissDialog()
+
+                    it.message?.let {
+//                        showSnackBar(it)
+
+                    }
+                }
+
+            }
         }
     }
 

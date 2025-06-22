@@ -13,6 +13,19 @@ object Preferences {
         return context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
     }
 
+    fun removeAllPreferencesExcept(context: Context, excludeKeys: List<String>) {
+        val settings = getSharedPreferences(context)
+        val allEntries = settings.all
+
+        val editor = settings.edit()
+        for (entry in allEntries.entries) {
+            if (!excludeKeys.contains(entry.key)) {
+                editor.remove(entry.key) // Remove keys not in the exclusion list
+            }
+        }
+        editor.apply() // Apply changes
+    }
+
     fun setStringPreference(context: Context, key: String?, value: String) {
         val settings: SharedPreferences = getSharedPreferences(context)
         val editor = settings.edit()
