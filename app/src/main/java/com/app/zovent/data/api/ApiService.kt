@@ -4,6 +4,7 @@ import com.app.zovent.data.model.forgot_password.request.ForgotPasswordRequest
 import com.app.zovent.data.model.forgot_password.response.ForgotPasswordResponse
 import com.app.zovent.data.model.get_district.response.GetDistrictResponse
 import com.app.zovent.data.model.new_password.request.NewPasswordRequest
+import com.app.zovent.data.model.resend_otp.ResendOtpRequest
 import com.app.zovent.data.model.signin.request.LoginRequest
 import com.app.zovent.data.model.signin.response.LoginResponse
 import com.app.zovent.data.model.signup.request.SignupRequest
@@ -38,9 +39,9 @@ interface ApiService {
         @Field("profile[gst_registered]") gstRegistered: String,
         @Field("profile[gst_number]") gstNumber: String?,
         @Field("profile[food_license]") foodLicense: String,
-        @Field("profile[food_liscense_number]") foodLicenseNumber: String?,
+        @Field("profile[food_license_number]") foodLicenseNumber: String?,
         @Field("profile[drug_license]") drugLicense: String,
-        @Field("profile[drug_liscense_number]") drugLicenseNumber: String?,
+        @Field("profile[drug_license_number]") drugLicenseNumber: String?,
         @Field("profile[area_pincode]") areaPincode: String,
         @Field("profile[district_name]") districtName: String
     ): SignupResponse
@@ -50,13 +51,16 @@ interface ApiService {
 
 
 
-    @POST("forgot-password/")
+    @POST("request-reset-otp/")
     suspend fun forgotPassword(@Body request: ForgotPasswordRequest): ForgotPasswordResponse
 
     @POST("verify-reset-otp/")
     suspend fun verifyForgotPasswordOtp(@Body request: VerifySignupOtpRequest): VerifySignupOtpResponse
 
-    @POST("set-new-password/ ")
+    @POST("set-new-password/")
     suspend fun createNewPassword(@Body request: NewPasswordRequest): VerifySignupOtpResponse
+
+    @POST("resend-otp/")
+    suspend fun resendOtp(@Body request: ResendOtpRequest): VerifySignupOtpResponse
 
 }

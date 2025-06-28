@@ -3,6 +3,7 @@ package com.app.zovent.data.repository
 import com.app.zovent.data.api.ApiService
 import com.app.zovent.data.model.forgot_password.request.ForgotPasswordRequest
 import com.app.zovent.data.model.new_password.request.NewPasswordRequest
+import com.app.zovent.data.model.resend_otp.ResendOtpRequest
 import com.app.zovent.data.model.signin.request.LoginRequest
 import com.app.zovent.data.model.signup.request.SignupRequest
 import com.app.zovent.data.model.signup.response.SignupResponse
@@ -51,5 +52,6 @@ class MainRepository(private val apiService: ApiService) {
     suspend fun forgotPasswordApi(request: ForgotPasswordRequest) = apiService.forgotPassword(request)
     suspend fun verifyForgotPasswordOtpApi(request: VerifySignupOtpRequest) = apiService.verifyForgotPasswordOtp(request)
     suspend fun newPasswordApi(request: NewPasswordRequest) = apiService.createNewPassword(request)
+    suspend fun newPasswordApi(request: ResendOtpRequest) = apiService.resendOtp(request)
 
 }

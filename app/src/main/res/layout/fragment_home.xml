@@ -69,6 +69,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 <androidx.recyclerview.widget.RecyclerView
+                    tools:itemCount="5"
                     app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/countDataRecycler"
                     android:layout_width="match_parent"
@@ -141,6 +142,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/pieChartLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
@@ -187,24 +189,22 @@
                             app:layout_constraintTop_toBottomOf="@id/pieChartLabel"/>
 
 
-<!--                        <com.github.mikephil.charting.charts.PieChart-->
-<!--                            android:id="@+id/pieChart"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="400dp"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintTop_toBottomOf="@id/pieChartLabel"-->
-<!--                            />-->
-
-<!--                        <com.anychart.AnyChartView-->
-<!--                            android:id="@+id/pieChart"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="400dp"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintTop_toBottomOf="@id/pieChartLabel" />-->
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+                <TextView
+                    android:onClick="@{()->clickEvent.invoke(1)}"
+                    android:id="@+id/logout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Temporary Logout"
+                    android:textColor="#243465"
+                    android:textSize="16sp"
+                    android:layout_marginVertical="20dp"
+                    android:gravity="center_horizontal"
+                    app:layout_constraintTop_toBottomOf="@+id/pieChartLayout" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 

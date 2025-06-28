@@ -64,7 +64,12 @@ class NewPasswordViewModel : BaseViewModel() {
         }
 
         // Navigate if validation is successful
-        hitCreateNewPasswordApi(NewPasswordRequest(otp = otp, email = email, new_password = newPasswordInput))
+        hitCreateNewPasswordApi(
+            NewPasswordRequest(
+            otp = otp,
+            email = email,
+            new_password = newPasswordInput,
+            confirm_new_password = confirmPasswordInput))
         // _validationMessage.value = "Password successfully updated!"
     }
     fun hitCreateNewPasswordApi(request: NewPasswordRequest) {

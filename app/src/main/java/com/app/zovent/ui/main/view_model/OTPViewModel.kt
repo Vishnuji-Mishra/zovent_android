@@ -19,6 +19,7 @@ import com.app.zovent.ui.base.BaseViewModel
 import com.app.zovent.ui.main.activity.DashboardActivity
 import com.app.zovent.utils.Resource
 import com.app.zovent.utils.StatusCode
+import com.app.zovent.utils.network.Event
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -38,7 +39,7 @@ class OTPViewModel : BaseViewModel() {
     val validationMessage: LiveData<String> get() = _validationMessage
 
     var getVerifySignupOtpResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
-    var getVerifyForgotPasswordOtpResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
+    var getVerifyForgotPasswordOtpResponse = MutableLiveData<Event<Resource<VerifySignupOtpResponse>>>()
 
 
     fun onClick(view: View) {
@@ -103,29 +104,29 @@ class OTPViewModel : BaseViewModel() {
     fun hitVerifyForgotPasswordOtpApi(request: VerifySignupOtpRequest) {
         val mainRepository = MainRepository(RetrofitBuilder.apiService)
         viewModelScope.launch {
-            getVerifyForgotPasswordOtpResponse.postValue(Resource.loading(null))
+            getVerifyForgotPasswordOtpResponse.postValue(Event(Resource.loading(null)))
             try {
 
-                getVerifyForgotPasswordOtpResponse.postValue(
+                getVerifyForgotPasswordOtpResponse.postValue(Event(
                     Resource.success(
                         mainRepository.verifyForgotPasswordOtpApi(request)
 
                     )
-                )
+                ))
             } catch (ex: IOException) {
-                getVerifyForgotPasswordOtpResponse.postValue(
+                getVerifyForgotPasswordOtpResponse.postValue(Event(
                     Resource.error(
                         StatusCode.STATUS_CODE_INTERNET_VALIDATION,
                         null
                     )
-                )
+                ))
             } catch (exception: Exception) {
-                getVerifyForgotPasswordOtpResponse.postValue(
+                getVerifyForgotPasswordOtpResponse.postValue(Event(
                     Resource.error(
                         StatusCode.SERVER_ERROR_MESSAGE,
                         null
                     )
-                )
+                ))
             }
 
 

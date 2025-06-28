@@ -18,6 +18,7 @@ import com.app.zovent.ui.base.BaseViewModel
 import com.app.zovent.ui.main.fragment.ForgotPasswordFragmentDirections
 import com.app.zovent.utils.Resource
 import com.app.zovent.utils.StatusCode
+import com.app.zovent.utils.network.Event
 import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.text.trim
@@ -27,7 +28,7 @@ class ForgotPasswordViewModel: BaseViewModel() {
     private val _validationMessage = MutableLiveData<String>()
     val validationMessage: LiveData<String> = _validationMessage
 
-    var forgotPasswordResponse = MutableLiveData<Resource<ForgotPasswordResponse>>()
+    val forgotPasswordResponse = MutableLiveData<Event<Resource<ForgotPasswordResponse>>>()
 
 
     fun onClick(view: View) {
@@ -58,34 +59,20 @@ class ForgotPasswordViewModel: BaseViewModel() {
     fun hitApi(request: ForgotPasswordRequest) {
         val mainRepository = MainRepository(RetrofitBuilder.apiService)
         viewModelScope.launch {
-            forgotPasswordResponse.postValue(Resource.loading(null))
+            forgotPasswordResponse.postValue(Event(Resource.loading(null)))
             try {
-
-                forgotPasswordResponse.postValue(
-                    Resource.success(
-                        mainRepository.forgotPasswordApi(request)
-
-                    )
-                )
+                val result = mainRepository.forgotPasswordApi(request)
+                forgotPasswordResponse.postValue(Event(Resource.success(result)))
             } catch (ex: IOException) {
                 forgotPasswordResponse.postValue(
-                    Resource.error(
-                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
-                        null
-                    )
+                    Event(Resource.error(StatusCode.STATUS_CODE_INTERNET_VALIDATION, null))
                 )
             } catch (exception: Exception) {
                 forgotPasswordResponse.postValue(
-                    Resource.error(
-                        StatusCode.SERVER_ERROR_MESSAGE,
-                        null
-                    )
+                    Event(Resource.error(StatusCode.SERVER_ERROR_MESSAGE, null))
                 )
             }
-
-
         }
-
     }
 
 }

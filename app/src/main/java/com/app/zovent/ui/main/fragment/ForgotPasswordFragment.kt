@@ -36,37 +36,24 @@ class ForgotPasswordFragment : BaseFragment<FragmentForgotPasswordBinding, Forgo
         mViewModel.validationMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
-        mViewModel.forgotPasswordResponse.observe(viewLifecycleOwner){
-            when (it.status) {
-                Status.SUCCESS -> {
-                    ProcessDialog.dismissDialog()
-                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-//                    if (it.data?.status == StatusCode.STATUS_CODE_SUCCESS) {
-                        findNavController().navigate(ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToOTPFragment2(from = "forgot", email = mViewModel.email.get()?.trim() ?: ""))
-//                    }
-//                    else if (it.data?.status == StatusCode.STATUS_CODE_USER_BLOCKED) {
-//                        Toast.makeText(requireContext(), it.data.message, Toast.LENGTH_SHORT).show()
-//                    }
-
-                }
-                Status.LOADING -> {
-
-                    ProcessDialog.startDialog(requireContext())
-
-
-                }
-                Status.ERROR -> {
-                    ProcessDialog.dismissDialog()
-
-                    it.message?.let {
-//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        mViewModel.forgotPasswordResponse.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { result ->
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        ProcessDialog.dismissDialog()
+                        Log.i("TAG", "setupObservers: " + Gson().toJson(result.data))
+                        Toast.makeText(requireContext(), result.data?.message, Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(
+                            ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToOTPFragment2(
+                                from = "forgot",
+                                email = mViewModel.email.get()?.trim() ?: ""
+                            )
+                        )
                     }
+                    Status.LOADING -> ProcessDialog.startDialog(requireContext())
+                    Status.ERROR -> ProcessDialog.dismissDialog()
                 }
-
             }
         }
-
     }
-
-
 }

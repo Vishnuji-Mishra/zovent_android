@@ -25,13 +25,10 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import kotlin.compareTo
 
 class DashboardActivity : BaseActivity<ActivityDashboardBinding>() {
-//    private lateinit var binding: ActivityDashboardBinding
     private lateinit var drawerAdapter: AdapterDrawerMenu
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard)
         enableEdgeToEdge()
         setBottomBarPadding()
         binding.bottomNavigationView.background = null
@@ -101,25 +98,6 @@ class DashboardActivity : BaseActivity<ActivityDashboardBinding>() {
     private fun isGestureNavigation(): Boolean {
         val resId = resources.getIdentifier("config_navBarInteractionMode", "integer", "android")
         return resId > 0 && resources.getInteger(resId) == 2
-    }
-
-    //    private fun setBottomBarPadding() {
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            // Remove extra padding from BottomAppBar and its children
-//            binding.bottomAppBar.setPadding(0, 0, 0, 0)
-//            val offset = if (isGestureNavigation()) systemBars.bottom else getNavigationBarHeight()
-//            binding.bottomNavigationView.setPadding(0, 0, 0, offset)
-//            WindowInsetsCompat.CONSUMED
-//        }
-//    }
-//    private fun isGestureNavigation(): Boolean {
-//        val resId = resources.getIdentifier("config_navBarInteractionMode", "integer", "android")
-//        return resId > 0 && resources.getInteger(resId) == 2
-//    }
-    private fun getNavigationBarHeight(): Int {
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
     }
 
     fun openDrawer() {

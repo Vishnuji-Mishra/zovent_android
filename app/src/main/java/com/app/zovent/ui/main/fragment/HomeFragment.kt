@@ -1,5 +1,6 @@
 package com.app.zovent.ui.main.fragment
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -25,12 +26,14 @@ import com.app.zovent.databinding.FragmentOTPBinding
 import com.app.zovent.databinding.FragmentOTPBinding.bind
 import com.app.zovent.ui.base.BaseFragment
 import com.app.zovent.ui.main.activity.DashboardActivity
+import com.app.zovent.ui.main.activity.SignupFlowActivity
 import com.app.zovent.ui.main.adapter.AdapterDashboardCountData
 import com.app.zovent.ui.main.custom.CustomMarkerView
 import com.app.zovent.ui.main.custom.GenericKeyEvent
 import com.app.zovent.ui.main.custom.GenericTextWatcher
 import com.app.zovent.ui.main.view_model.HomeViewModel
 import com.app.zovent.ui.main.view_model.OTPViewModel
+import com.app.zovent.utils.Preferences
 import com.app.zovent.utils.static_data.homeCountDataListColors
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.Legend
@@ -68,10 +71,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.f
         }
     }
 
+    private fun tempLogout() {
+        Preferences.removeAllPreferencesExcept(requireContext(), listOf())
+        val intent = Intent(requireContext(), SignupFlowActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
     fun clickEvent(click: Int){
         when(click){
             0->{
                 (activity as? DashboardActivity)?.openDrawer()
+            }
+            1->{
+                tempLogout()
             }
         }
     }

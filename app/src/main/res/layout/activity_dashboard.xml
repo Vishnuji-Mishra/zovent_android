@@ -30,6 +30,8 @@
                 app:navGraph="@navigation/home_navigation" />
 
             <com.google.android.material.bottomappbar.BottomAppBar
+                app:contentInsetStart="0dp"
+
                 android:id="@+id/bottomAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

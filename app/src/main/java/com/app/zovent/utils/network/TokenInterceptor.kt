@@ -24,7 +24,9 @@ class TokenInterceptor : Interceptor {
 
             val message = try {
                 val jsonObject = JSONObject(rawJson)
-                jsonObject.optString("error", "Something went wrong")
+                jsonObject.optString("error").ifEmpty {
+                    jsonObject.optString("message", "Something went wrong")
+                }
             } catch (e: Exception) {
                 "Something went wrong"
             }

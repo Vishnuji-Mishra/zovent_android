@@ -55,7 +55,7 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
         }
         resendNowText()
         customOtp()
-        Log.i("TAG", "setupViews: "+args.from)
+//        Log.i("TAG", "setupViews: "+args.from)
         mViewModel.from = args.from
         mViewModel.email = args.email
     }
@@ -94,27 +94,38 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
             }
         }
 
-        mViewModel.getVerifyForgotPasswordOtpResponse.observe(viewLifecycleOwner){
-            when (it.status) {
+        mViewModel.getVerifyForgotPasswordOtpResponse.observe(viewLifecycleOwner){ event ->
+            event.getContentIfNotHandled()?.let { result ->
+            when (result.status) {
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
-                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-                    findNavController().navigate(OTPFragmentDirections.actionOTPFragmentToNewPasswordFragment(from = mViewModel.from, email = mViewModel.email, otp = mViewModel.getEnteredOtp()))
+                    Log.i("TAG", "setupObservers: " + Gson().toJson(result.data))
+                    Toast.makeText(requireContext(), result.data?.message, Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(
+                        OTPFragmentDirections.actionOTPFragmentToNewPasswordFragment(
+                            from = mViewModel.from,
+                            email = mViewModel.email,
+                            otp = mViewModel.getEnteredOtp()
+                        )
+                    )
 
                 }
+
                 Status.LOADING -> {
 
                     ProcessDialog.startDialog(requireContext())
 
 
                 }
+
                 Status.ERROR -> {
                     ProcessDialog.dismissDialog()
 
-                    it.message?.let {
+                    result.message?.let {
 //                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
 
             }
         }

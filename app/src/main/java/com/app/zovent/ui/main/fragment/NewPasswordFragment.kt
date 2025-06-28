@@ -51,7 +51,7 @@ class NewPasswordFragment : BaseFragment<FragmentNewPasswordBinding, NewPassword
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
                     Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-
+                    Toast.makeText(requireContext(), it.data?.message, Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_newPasswordFragment_to_signinFragment)
                 }
                 Status.LOADING -> {
@@ -82,7 +82,7 @@ class NewPasswordFragment : BaseFragment<FragmentNewPasswordBinding, NewPassword
         setConfirmPasswordToggle()
         mViewModel.from = args.from
         mViewModel.email = args.email
-        mViewModel.email = args.otp
+        mViewModel.otp = args.otp
     }
 
     override fun setupObservers() {

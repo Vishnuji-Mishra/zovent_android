@@ -62,22 +62,16 @@ class SigninFragment : BaseFragment<FragmentSigninBinding, SigninViewModel>(R.la
         mViewModel.loginResponse.observe(viewLifecycleOwner){
             when (it.status) {
                 Status.SUCCESS -> {
-                        ProcessDialog.dismissDialog()
-                        Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-//                    if (it.data?.status == StatusCode.STATUS_CODE_SUCCESS) {
-                        Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
-                        Preferences.setStringPreference(requireContext(), TOKEN, it.data?.token ?: "")
-                        CommonUtils.hideKeyboard(requireActivity())
-                        val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        }
-                        requireContext().startActivity(intent)
-
-//                    }
-//                    else if (it.data?.status == StatusCode.STATUS_CODE_USER_BLOCKED) {
-
-//                        CommonUtils.logoutAlert(requireActivity(),requireContext(),getString(R.string.logout_alert),it.data.message)
-//                    }
+                    ProcessDialog.dismissDialog()
+                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
+                    Toast.makeText(requireContext(), it.data?.message, Toast.LENGTH_SHORT).show()
+                    Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
+                    Preferences.setStringPreference(requireContext(), TOKEN, it.data?.token ?: "")
+                    CommonUtils.hideKeyboard(requireActivity())
+                    val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    requireContext().startActivity(intent)
 
                 }
                 Status.LOADING -> {
