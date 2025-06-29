@@ -42,13 +42,15 @@ class ForgotPasswordFragment : BaseFragment<FragmentForgotPasswordBinding, Forgo
                     Status.SUCCESS -> {
                         ProcessDialog.dismissDialog()
                         Log.i("TAG", "setupObservers: " + Gson().toJson(result.data))
-                        Toast.makeText(requireContext(), result.data?.message, Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(
-                            ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToOTPFragment2(
-                                from = "forgot",
-                                email = mViewModel.email.get()?.trim() ?: ""
+                        Toast.makeText(requireContext(), result.data?.response?.message, Toast.LENGTH_SHORT).show()
+                        if (result.data?.response?.code==200){
+                            findNavController().navigate(
+                                ForgotPasswordFragmentDirections.actionForgotPasswordFragmentToOTPFragment2(
+                                    from = "forgot",
+                                    email = mViewModel.email.get()?.trim() ?: ""
+                                )
                             )
-                        )
+                        }
                     }
                     Status.LOADING -> ProcessDialog.startDialog(requireContext())
                     Status.ERROR -> ProcessDialog.dismissDialog()

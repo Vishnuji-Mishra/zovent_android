@@ -12,11 +12,14 @@ import com.app.zovent.data.model.signup.response.SignupResponse
 import com.app.zovent.data.model.verify_signup_otp.request.VerifySignupOtpRequest
 import com.app.zovent.data.model.verify_signup_otp.response.VerifySignupOtpResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
@@ -27,7 +30,7 @@ interface ApiService {
     @GET("pincode-lookup/")
     suspend fun districtName(@Query("pincode") pincode: String? = null): GetDistrictResponse
 
-    @FormUrlEncoded
+    /*@FormUrlEncoded
     @POST("register/")
     suspend fun signup(
         @Field("username") username: String,
@@ -44,7 +47,27 @@ interface ApiService {
         @Field("profile[drug_license_number]") drugLicenseNumber: String?,
         @Field("profile[area_pincode]") areaPincode: String,
         @Field("profile[district_name]") districtName: String
+    ): SignupResponse*/
+    @Multipart
+    @POST("register/")
+    suspend fun signup(
+        @Part("username") username: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part("mobile_number") mobileNumber: RequestBody,
+        @Part("profile[business_name]") businessName: RequestBody,
+        @Part("profile[business_type]") businessType: RequestBody,
+        @Part("profile[gst_registered]") gstRegistered: RequestBody,
+        @Part("profile[gst_number]") gstNumber: RequestBody?,
+        @Part("profile[food_license]") foodLicense: RequestBody,
+        @Part("profile[food_license_number]") foodLicenseNumber: RequestBody?,
+        @Part("profile[drug_license]") drugLicense: RequestBody,
+        @Part("profile[drug_license_number]") drugLicenseNumber: RequestBody?,
+        @Part("profile[area_pincode]") areaPincode: RequestBody,
+        @Part("profile[district_name]") districtName: RequestBody,
+        @Part companyLogo: MultipartBody.Part? // <-- optional image
     ): SignupResponse
+
 
     @POST("verify-signup-otp/")
     suspend fun verifySignupOtp(@Body request: VerifySignupOtpRequest): VerifySignupOtpResponse
@@ -60,7 +83,10 @@ interface ApiService {
     @POST("set-new-password/")
     suspend fun createNewPassword(@Body request: NewPasswordRequest): VerifySignupOtpResponse
 
-    @POST("resend-otp/")
-    suspend fun resendOtp(@Body request: ResendOtpRequest): VerifySignupOtpResponse
+    @POST("resend-reset-otp/")
+    suspend fun resendResetOtp(@Body request: ResendOtpRequest): VerifySignupOtpResponse
+
+    @POST("resend-signup-otp/")
+    suspend fun resendSignupOtp(@Body request: ResendOtpRequest): VerifySignupOtpResponse
 
 }

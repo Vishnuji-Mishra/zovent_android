@@ -1,6 +1,6 @@
-package com.app.zovent.data.model.signup.response
+package com.app.zovent.data.model.common.response
 
-data class SignupResponse(
+data class CommonResponse(
     val response: Response
 ) {
     data class Response(

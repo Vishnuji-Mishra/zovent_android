@@ -50,13 +50,9 @@ class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.la
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
                     Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-//                    if (it.data?.status == StatusCode.STATUS_CODE_SUCCESS) {
-                        binding.districtNameInput.setText(it.data?.district)
-//                    }
-//                    else if (it.data?.status == StatusCode.STATUS_CODE_USER_BLOCKED) {
-//                        Toast.makeText(requireContext(), it.data.message, Toast.LENGTH_SHORT).show()
-//                    }
-
+                    if (it.data?.response?.code == StatusCode.STATUS_CODE_SUCCESS) {
+                        binding.districtNameInput.setText(it.data.response.Result.district)
+                    }
                 }
                 Status.LOADING -> {
 
@@ -75,20 +71,30 @@ class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.la
             }
         }
 
-        mViewModel.getSignupResponse.observe(viewLifecycleOwner){
+        mViewModel.getSignupResponse.observe(viewLifecycleOwner){event ->
+            event.getContentIfNotHandled()?.let { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
-                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-                    findNavController().navigate(SignupFragmentDirections.actionSignupFragmentToOTPFragment(from = "signup", email = it.data?.email ?: ""))
-
+                    Log.i("TAG", "setupObservers: " + Gson().toJson(it.data))
+                    Toast.makeText(requireContext(), it.data?.response?.message, Toast.LENGTH_SHORT).show()
+                    if (it.data?.response?.code==200){
+                        findNavController().navigate(
+                            SignupFragmentDirections.actionSignupFragmentToOTPFragment(
+                                from = "signup",
+                                email = mViewModel.email.get()?.trim() ?: ""
+                            )
+                        )
+                    }
                 }
+
                 Status.LOADING -> {
 
                     ProcessDialog.startDialog(requireContext())
 
 
                 }
+
                 Status.ERROR -> {
                     ProcessDialog.dismissDialog()
 
@@ -96,7 +102,7 @@ class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.la
 //                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                     }
                 }
-
+            }
             }
         }
 
@@ -266,6 +272,7 @@ class SignupFragment : BaseFragment<FragmentSignupBinding, SignupViewModel>(R.la
     }
 
     private fun onCompanyLogoPicked(uri: Uri) {
+        Log.i("TAG", "onCompanyLogoPicked: "+uri)
         binding.chooseFile.text = "Company Logo"
         binding.chooseFile.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
         binding.removeCompanyLogo.isVisible = true

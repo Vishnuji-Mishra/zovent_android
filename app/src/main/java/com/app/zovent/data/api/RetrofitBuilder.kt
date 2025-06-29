@@ -31,7 +31,7 @@ object  RetrofitBuilder {
             .addInterceptor(Interceptor { chain ->
                 val ongoing: Request.Builder = chain.request().newBuilder()
                 ongoing.addHeader("Accept", "application/json")
-                ongoing.addHeader("Content-Type", "application/json")
+//                ongoing.addHeader("Content-Type", "application/json")
                 //add header
                 /*Hawk.get<String>(TOKEN, null)?.let {
                     ongoing.addHeader(

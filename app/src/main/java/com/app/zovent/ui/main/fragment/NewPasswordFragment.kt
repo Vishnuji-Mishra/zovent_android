@@ -46,31 +46,40 @@ class NewPasswordFragment : BaseFragment<FragmentNewPasswordBinding, NewPassword
     override fun isNetworkAvailable(boolean: Boolean) {}
 
     override fun setupViewModel() {
-        mViewModel.getNewPasswordResponse.observe(viewLifecycleOwner){
-            when (it.status) {
-                Status.SUCCESS -> {
-                    ProcessDialog.dismissDialog()
-                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-                    Toast.makeText(requireContext(), it.data?.message, Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_newPasswordFragment_to_signinFragment)
-                }
-                Status.LOADING -> {
-
-                    ProcessDialog.startDialog(requireContext())
-
-
-                }
-                Status.ERROR -> {
-                    ProcessDialog.dismissDialog()
-
-                    it.message?.let {
-//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        mViewModel.getNewPasswordResponse.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { it ->
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        ProcessDialog.dismissDialog()
+                        Log.i("TAG", "setupObservers: " + Gson().toJson(it.data))
+                        Toast.makeText(
+                            requireContext(),
+                            it.data?.response?.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        if (it.data?.response?.code == 200) {
+                            findNavController().navigate(R.id.action_newPasswordFragment_to_signinFragment)
+                        }
                     }
-                }
 
+                    Status.LOADING -> {
+
+                        ProcessDialog.startDialog(requireContext())
+
+
+                    }
+
+                    Status.ERROR -> {
+                        ProcessDialog.dismissDialog()
+
+                        it.message?.let {
+//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                }
             }
         }
-
     }
 
     override fun setupViews() {

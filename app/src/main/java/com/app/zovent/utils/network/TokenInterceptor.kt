@@ -23,10 +23,9 @@ class TokenInterceptor : Interceptor {
             val rawJson = responseBody.string()
 
             val message = try {
-                val jsonObject = JSONObject(rawJson)
-                jsonObject.optString("error").ifEmpty {
-                    jsonObject.optString("message", "Something went wrong")
-                }
+                val rootObject = JSONObject(rawJson)
+                val responseObject = rootObject.optJSONObject("response")
+                responseObject?.optString("message", "Something went wrong") ?: "Something went wrong"
             } catch (e: Exception) {
                 "Something went wrong"
             }
@@ -34,6 +33,7 @@ class TokenInterceptor : Interceptor {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(MyApplication.appContext, message, Toast.LENGTH_LONG).show()
             }
+
         }
 //        else if (response.code == 401/*||response.code == 500*/){
 //            Preferences.removeAllPreferencesExcept(MyApplication.appContext!!, listOf())

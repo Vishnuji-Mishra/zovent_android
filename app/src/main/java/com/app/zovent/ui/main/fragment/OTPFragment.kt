@@ -3,6 +3,7 @@ package com.app.zovent.ui.main.fragment
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
@@ -21,6 +22,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.app.zovent.R
+import com.app.zovent.data.model.resend_otp.ResendOtpRequest
+import com.app.zovent.data.model.verify_signup_otp.request.VerifySignupOtpRequest
 import com.app.zovent.databinding.FragmentOTPBinding
 import com.app.zovent.databinding.FragmentSigninBinding
 import com.app.zovent.ui.base.BaseFragment
@@ -41,6 +44,9 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
     override val binding: FragmentOTPBinding by viewBinding(FragmentOTPBinding::bind)
     override val mViewModel: OTPViewModel by viewModels()
     private val args: OTPFragmentArgs by navArgs()
+    private var timer: CountDownTimer? = null
+    private var isTimerRunning = false
+    private val timerDuration = 30 * 1000
 
     override fun isNetworkAvailable(boolean: Boolean) {}
 
@@ -58,39 +64,41 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
 //        Log.i("TAG", "setupViews: "+args.from)
         mViewModel.from = args.from
         mViewModel.email = args.email
+        if (!isTimerRunning) {
+            startResendTimer()
+        }
     }
 
     override fun setupObservers() {
         mViewModel.validationMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
-        mViewModel.getVerifySignupOtpResponse.observe(viewLifecycleOwner){
+        mViewModel.getVerifySignupOtpResponse.observe(viewLifecycleOwner){event ->
+            event.getContentIfNotHandled()?.let { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
-                    Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-                    Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
-                    Preferences.setStringPreference(requireContext(), TOKEN, it.data?.token ?: "")
-                    CommonUtils.hideKeyboard(requireActivity())
-                    val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    Log.i("TAG", "setupObservers: " + Gson().toJson(it.data))
+                    Toast.makeText(requireContext(), it.data?.response?.message, Toast.LENGTH_SHORT).show()
+                    if (it.data?.response?.code==200){
+                        Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
+                        Preferences.setStringPreference(requireContext(), TOKEN, it.data?.response?.Result?.token ?: "")
+                        CommonUtils.hideKeyboard(requireActivity())
+                        val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        requireContext().startActivity(intent)
                     }
-                    requireContext().startActivity(intent)
                 }
+
                 Status.LOADING -> {
-
                     ProcessDialog.startDialog(requireContext())
-
-
                 }
+
                 Status.ERROR -> {
                     ProcessDialog.dismissDialog()
-
-                    it.message?.let {
-//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                    }
                 }
-
+            }
             }
         }
 
@@ -100,36 +108,79 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
                     Log.i("TAG", "setupObservers: " + Gson().toJson(result.data))
-                    Toast.makeText(requireContext(), result.data?.message, Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(
-                        OTPFragmentDirections.actionOTPFragmentToNewPasswordFragment(
-                            from = mViewModel.from,
-                            email = mViewModel.email,
-                            otp = mViewModel.getEnteredOtp()
-                        )
-                    )
+                    Toast.makeText(requireContext(), result.data?.response?.message, Toast.LENGTH_SHORT).show()
+                    if (result.data?.response?.code==200){
 
+                        findNavController().navigate(
+                            OTPFragmentDirections.actionOTPFragmentToNewPasswordFragment(
+                                from = mViewModel.from,
+                                email = mViewModel.email,
+                                otp = mViewModel.getEnteredOtp()
+                            )
+                        )
+                    }
                 }
 
                 Status.LOADING -> {
-
-                    ProcessDialog.startDialog(requireContext())
-
-
-                }
+                    ProcessDialog.startDialog(requireContext()) }
 
                 Status.ERROR -> {
                     ProcessDialog.dismissDialog()
-
-                    result.message?.let {
-//                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
 
             }
         }
 
+        mViewModel.getResendResetOtpResponse.observe(viewLifecycleOwner){ event ->
+            event.getContentIfNotHandled()?.let { result ->
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        ProcessDialog.dismissDialog()
+                        Log.i("TAG", "setupObservers: " + Gson().toJson(result.data))
+                        Toast.makeText(requireContext(), result.data?.response?.message, Toast.LENGTH_SHORT).show()
+                        if (result.data?.response?.code==200){
+                            if (!isTimerRunning) {
+                                startResendTimer()
+                            }
+                        }
+                    }
+
+                    Status.LOADING -> {
+                        ProcessDialog.startDialog(requireContext()) }
+
+                    Status.ERROR -> {
+                        ProcessDialog.dismissDialog()
+                    }
+                }
+
+            }
+        }
+
+        mViewModel.getResendSignupOtpResponse.observe(viewLifecycleOwner){ event ->
+            event.getContentIfNotHandled()?.let { result ->
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        ProcessDialog.dismissDialog()
+                        Log.i("TAG", "setupObservers: " + Gson().toJson(result.data))
+                        Toast.makeText(requireContext(), result.data?.response?.message, Toast.LENGTH_SHORT).show()
+                        if (result.data?.response?.code==200){
+                            if (!isTimerRunning) {
+                                startResendTimer()
+                            }
+                        }
+                    }
+
+                    Status.LOADING -> {
+                        ProcessDialog.startDialog(requireContext()) }
+
+                    Status.ERROR -> {
+                        ProcessDialog.dismissDialog()
+                    }
+                }
+
+            }
+        }
 
     }
     private fun customOtp() {
@@ -174,7 +225,16 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 // Handle click here
-                Toast.makeText(widget.context, "Resend clicked!", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(widget.context, "Resend clicked!", Toast.LENGTH_SHORT).show()
+
+                when (mViewModel.from) {
+                    "signup" -> {
+                        mViewModel.hitResendSignupOtpApi(ResendOtpRequest(email = mViewModel.email))
+                    }
+                    "forgot" -> {
+                        mViewModel.hitResendResetOtpApi(ResendOtpRequest(email = mViewModel.email))
+                    }
+                }
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -191,11 +251,31 @@ class OTPFragment : BaseFragment<FragmentOTPBinding, OTPViewModel>(R.layout.frag
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
 
-        binding.signup.text = spannable
-        binding.signup.movementMethod = LinkMovementMethod.getInstance()
-        binding.signup.highlightColor = Color.TRANSPARENT
+        binding.resendOtp.text = spannable
+        binding.resendOtp.movementMethod = LinkMovementMethod.getInstance()
+        binding.resendOtp.highlightColor = Color.TRANSPARENT
 
     }
+    private fun startResendTimer() {
+        isTimerRunning = true
+        timer = object : CountDownTimer(timerDuration.toLong(), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsRemaining = millisUntilFinished / 1000
+                val timerText = "${getString(R.string.resend_in)} $secondsRemaining ${getString(R.string.seconds)}"
+                binding.resendOtp.text = timerText
+            }
 
+            override fun onFinish() {
+                isTimerRunning = false
+                resendNowText()
+            }
+        }.start()
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Cancel the timer to prevent memory leaks
+        timer?.cancel()
+        timer = null
+    }
 
 }

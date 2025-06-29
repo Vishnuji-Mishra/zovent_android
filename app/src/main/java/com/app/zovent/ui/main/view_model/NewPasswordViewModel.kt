@@ -15,6 +15,7 @@ import com.app.zovent.data.repository.MainRepository
 import com.app.zovent.ui.base.BaseViewModel
 import com.app.zovent.utils.Resource
 import com.app.zovent.utils.StatusCode
+import com.app.zovent.utils.network.Event
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -29,7 +30,7 @@ class NewPasswordViewModel : BaseViewModel() {
     var email = ""
     var otp = ""
 
-    var getNewPasswordResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
+    var getNewPasswordResponse = MutableLiveData<Event<Resource<VerifySignupOtpResponse>>>()
 
     fun onClick(view: View) {
         when (view.id) {
@@ -75,29 +76,29 @@ class NewPasswordViewModel : BaseViewModel() {
     fun hitCreateNewPasswordApi(request: NewPasswordRequest) {
         val mainRepository = MainRepository(RetrofitBuilder.apiService)
         viewModelScope.launch {
-            getNewPasswordResponse.postValue(Resource.loading(null))
+            getNewPasswordResponse.postValue(Event(Resource.loading(null)))
             try {
 
-                getNewPasswordResponse.postValue(
+                getNewPasswordResponse.postValue(Event(
                     Resource.success(
                         mainRepository.newPasswordApi(request)
 
                     )
-                )
+                ))
             } catch (ex: IOException) {
-                getNewPasswordResponse.postValue(
+                getNewPasswordResponse.postValue(Event(
                     Resource.error(
                         StatusCode.STATUS_CODE_INTERNET_VALIDATION,
                         null
                     )
-                )
+                ))
             } catch (exception: Exception) {
-                getNewPasswordResponse.postValue(
+                getNewPasswordResponse.postValue(Event(
                     Resource.error(
                         StatusCode.SERVER_ERROR_MESSAGE,
                         null
                     )
-                )
+                ))
             }
 
 

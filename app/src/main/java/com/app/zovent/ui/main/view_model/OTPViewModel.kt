@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.app.zovent.R
 import com.app.zovent.data.api.RetrofitBuilder
+import com.app.zovent.data.model.resend_otp.ResendOtpRequest
 import com.app.zovent.data.model.signup.request.SignupRequest
 import com.app.zovent.data.model.signup.response.SignupResponse
 import com.app.zovent.data.model.verify_signup_otp.request.VerifySignupOtpRequest
@@ -38,8 +39,10 @@ class OTPViewModel : BaseViewModel() {
     private val _validationMessage = MutableLiveData<String>()
     val validationMessage: LiveData<String> get() = _validationMessage
 
-    var getVerifySignupOtpResponse = MutableLiveData<Resource<VerifySignupOtpResponse>>()
+    var getVerifySignupOtpResponse = MutableLiveData<Event<Resource<VerifySignupOtpResponse>>>()
     var getVerifyForgotPasswordOtpResponse = MutableLiveData<Event<Resource<VerifySignupOtpResponse>>>()
+    var getResendResetOtpResponse = MutableLiveData<Event<Resource<VerifySignupOtpResponse>>>()
+    var getResendSignupOtpResponse = MutableLiveData<Event<Resource<VerifySignupOtpResponse>>>()
 
 
     fun onClick(view: View) {
@@ -71,29 +74,29 @@ class OTPViewModel : BaseViewModel() {
     fun hitVerifySignupOtpApi(request: VerifySignupOtpRequest) {
         val mainRepository = MainRepository(RetrofitBuilder.apiService)
         viewModelScope.launch {
-            getVerifySignupOtpResponse.postValue(Resource.loading(null))
+            getVerifySignupOtpResponse.postValue(Event(Resource.loading(null)))
             try {
 
-                getVerifySignupOtpResponse.postValue(
+                getVerifySignupOtpResponse.postValue(Event(
                     Resource.success(
                         mainRepository.verifySignupOtpApi(request)
 
                     )
-                )
+                ))
             } catch (ex: IOException) {
-                getVerifySignupOtpResponse.postValue(
+                getVerifySignupOtpResponse.postValue(Event(
                     Resource.error(
                         StatusCode.STATUS_CODE_INTERNET_VALIDATION,
                         null
                     )
-                )
+                ))
             } catch (exception: Exception) {
-                getVerifySignupOtpResponse.postValue(
+                getVerifySignupOtpResponse.postValue(Event(
                     Resource.error(
                         StatusCode.SERVER_ERROR_MESSAGE,
                         null
                     )
-                )
+                ))
             }
 
 
@@ -122,6 +125,72 @@ class OTPViewModel : BaseViewModel() {
                 ))
             } catch (exception: Exception) {
                 getVerifyForgotPasswordOtpResponse.postValue(Event(
+                    Resource.error(
+                        StatusCode.SERVER_ERROR_MESSAGE,
+                        null
+                    )
+                ))
+            }
+
+
+        }
+
+    }
+
+    fun hitResendResetOtpApi(request: ResendOtpRequest) {
+        val mainRepository = MainRepository(RetrofitBuilder.apiService)
+        viewModelScope.launch {
+            getResendResetOtpResponse.postValue(Event(Resource.loading(null)))
+            try {
+
+                getResendResetOtpResponse.postValue(Event(
+                    Resource.success(
+                        mainRepository.resendResetOtpApi(request)
+
+                    )
+                ))
+            } catch (ex: IOException) {
+                getResendResetOtpResponse.postValue(Event(
+                    Resource.error(
+                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
+                        null
+                    )
+                ))
+            } catch (exception: Exception) {
+                getResendResetOtpResponse.postValue(Event(
+                    Resource.error(
+                        StatusCode.SERVER_ERROR_MESSAGE,
+                        null
+                    )
+                ))
+            }
+
+
+        }
+
+    }
+
+    fun hitResendSignupOtpApi(request: ResendOtpRequest) {
+        val mainRepository = MainRepository(RetrofitBuilder.apiService)
+        viewModelScope.launch {
+            getResendSignupOtpResponse.postValue(Event(Resource.loading(null)))
+            try {
+
+                getResendSignupOtpResponse.postValue(Event(
+                    Resource.success(
+                        mainRepository.resendSignupOtpApi(request)
+
+                    )
+                ))
+            } catch (ex: IOException) {
+                getResendSignupOtpResponse.postValue(Event(
+                    Resource.error(
+                        StatusCode.STATUS_CODE_INTERNET_VALIDATION,
+                        null
+                    )
+                ))
+            } catch (exception: Exception) {
+                getResendSignupOtpResponse.postValue(Event(
                     Resource.error(
                         StatusCode.SERVER_ERROR_MESSAGE,
                         null

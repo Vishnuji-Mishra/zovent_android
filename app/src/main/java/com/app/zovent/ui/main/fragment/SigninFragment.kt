@@ -64,14 +64,16 @@ class SigninFragment : BaseFragment<FragmentSigninBinding, SigninViewModel>(R.la
                 Status.SUCCESS -> {
                     ProcessDialog.dismissDialog()
                     Log.i("TAG", "setupObservers: "+Gson().toJson(it.data))
-                    Toast.makeText(requireContext(), it.data?.message, Toast.LENGTH_SHORT).show()
-                    Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
-                    Preferences.setStringPreference(requireContext(), TOKEN, it.data?.token ?: "")
-                    CommonUtils.hideKeyboard(requireActivity())
-                    val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    Toast.makeText(requireContext(), it.data?.response?.message, Toast.LENGTH_SHORT).show()
+                    if (it.data?.response?.code==200){
+                        Preferences.setStringPreference(requireContext(), IS_LOGIN, "2")
+                        Preferences.setStringPreference(requireContext(), TOKEN, it.data.response.Result.token ?: "")
+                        CommonUtils.hideKeyboard(requireActivity())
+                        val intent = Intent(requireContext(), DashboardActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        requireContext().startActivity(intent)
                     }
-                    requireContext().startActivity(intent)
 
                 }
                 Status.LOADING -> {

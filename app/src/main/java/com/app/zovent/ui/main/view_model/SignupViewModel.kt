@@ -1,5 +1,6 @@
 package com.app.zovent.ui.main.view_model
 
+import android.content.Context
 import android.net.Uri
 import android.util.Patterns
 import android.view.View
@@ -7,23 +8,22 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.app.zovent.R
 import com.app.zovent.data.api.RetrofitBuilder
-import com.app.zovent.data.model.forgot_password.request.ForgotPasswordRequest
 import com.app.zovent.data.model.get_district.response.GetDistrictResponse
-import com.app.zovent.data.model.signin.response.LoginResponse
-import com.app.zovent.data.model.signup.request.Profile
-import com.app.zovent.data.model.signup.request.SignupRequest
 import com.app.zovent.data.model.signup.response.SignupResponse
 import com.app.zovent.data.repository.MainRepository
 import com.app.zovent.ui.base.BaseViewModel
-import com.app.zovent.ui.main.fragment.SignupFragmentDirections
 import com.app.zovent.utils.Resource
 import com.app.zovent.utils.StatusCode
+import com.app.zovent.utils.network.Event
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.io.IOException
 
 class SignupViewModel: BaseViewModel() {
@@ -48,7 +48,7 @@ class SignupViewModel: BaseViewModel() {
     val validationMessage: LiveData<String> = _validationMessage
 
     var getDistrictNameResponse = MutableLiveData<Resource<GetDistrictResponse>>()
-    var getSignupResponse = MutableLiveData<Resource<SignupResponse>>()
+    var getSignupResponse = MutableLiveData<Event<Resource<SignupResponse>>>()
 
     fun onClick(view: View) {
         when(view.id){
@@ -187,7 +187,9 @@ class SignupViewModel: BaseViewModel() {
             drugLicense = if (showDrugInput.get()) "Yes" else "No",
             drugLicenseNumber = if (showDrugInput.get()) drugInput else null,
             areaPincode = areaInput ?: "",
-            districtName = districtInput ?: ""
+            districtName = districtInput ?: "",
+            companyLogo = if (isCompanyLogoPicked.get()) companyLogoUri else null,
+            view.context
         )
     }
 
@@ -238,11 +240,13 @@ class SignupViewModel: BaseViewModel() {
         drugLicense: String,
         drugLicenseNumber: String?,
         areaPincode: String,
-        districtName: String
+        districtName: String,
+        companyLogo: Uri?,
+        context: Context
     ) {
         val mainRepository = MainRepository(RetrofitBuilder.apiService)
         viewModelScope.launch {
-            getSignupResponse.postValue(Resource.loading(null))
+            getSignupResponse.postValue(Event(Resource.loading(null)))
             try {
                 val response = mainRepository.signupApi(
                     username,
@@ -258,16 +262,34 @@ class SignupViewModel: BaseViewModel() {
                     drugLicense,
                     drugLicenseNumber,
                     areaPincode,
-                    districtName
+                    districtName,
+                    prepareFilePart(context, companyLogo)
                 )
-                getSignupResponse.postValue(Resource.success(response))
+                getSignupResponse.postValue(Event(Resource.success(response)))
             } catch (ex: IOException) {
-                getSignupResponse.postValue(Resource.error(StatusCode.STATUS_CODE_INTERNET_VALIDATION, null))
+                getSignupResponse.postValue(Event(Resource.error(StatusCode.STATUS_CODE_INTERNET_VALIDATION, null)))
             } catch (exception: Exception) {
-                getSignupResponse.postValue(Resource.error(StatusCode.SERVER_ERROR_MESSAGE, null))
+                getSignupResponse.postValue(Event(Resource.error(StatusCode.SERVER_ERROR_MESSAGE, null)))
             }
         }
     }
+    fun prepareFilePart(context: Context, fileUri: Uri?): MultipartBody.Part? {
+        if (fileUri == null) return null
+
+        val file = getFileFromUri(context, fileUri) ?: return null
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("profile[company_logo]", file.name, requestFile)
+    }
+
+    fun getFileFromUri(context: Context, uri: Uri): File? {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val tempFile = File.createTempFile("upload", ".jpg", context.cacheDir)
+        tempFile.outputStream().use { output ->
+            inputStream.copyTo(output)
+        }
+        return tempFile
+    }
+
 
 
 }
